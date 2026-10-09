@@ -44,8 +44,9 @@ async function loadDetector(onProgress: (progress: ModelProgress) => void): Prom
   if (!detectorPromise) {
     detectorPromise = (async () => {
       const { pipeline, env } = await import('@huggingface/transformers');
-      env.allowLocalModels = false;
-      env.useBrowserCache = true;
+      const isBrowser = typeof window !== 'undefined';
+      env.allowLocalModels = !isBrowser;
+      env.useBrowserCache = isBrowser;
       return await pipeline(
         'zero-shot-object-detection',
         'onnx-community/grounding-dino-tiny-ONNX',

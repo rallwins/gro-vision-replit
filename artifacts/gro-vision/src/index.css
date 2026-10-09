@@ -193,6 +193,31 @@ button:disabled { cursor: not-allowed; }
 .sample-image img { width:100%; height:100%; object-fit:contain; mix-blend-mode:multiply; }
 .sample-caption { display:block; padding:9px 10px 11px; font-size:10px; font-weight:700; color:#445e52; line-height:1.3; min-height:43px; }
 .sample-kind { display:block; font:8px var(--app-font-mono); color:#929287; text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+.benchmark-section { padding:18px 0 34px; border-top:1px solid hsl(var(--border)); }
+.benchmark-header { align-items:center; margin-bottom:9px; }
+.benchmark-header h2 { margin-top:7px; }
+.benchmark-command { flex:none; max-width:370px; text-align:right; color:#85887e; font:9px var(--app-font-mono); line-height:1.5; }
+.benchmark-command code { color:#4a6a58; }
+.benchmark-intro { max-width:720px; margin:0 0 15px; color:#7d8178; font-size:11px; line-height:1.55; }
+.benchmark-status { display:flex; align-items:center; gap:9px; min-height:44px; padding:10px 13px; border:1px solid #dce2d8; border-radius:9px; color:#4d6d5c; background:#f2f4ee; font-size:11px; }
+.benchmark-status .spinner { border-color:rgba(54,112,94,.25); border-top-color:#36705e; }
+.benchmark-error { margin:10px 0; }
+.benchmark-report { border:1px solid #e1e1d6; border-radius:12px; background:#fcfbf6; padding:16px; }
+.benchmark-model-line { display:flex; justify-content:space-between; gap:12px; color:#7b8075; font:9px var(--app-font-mono); text-transform:uppercase; letter-spacing:.06em; }
+.benchmark-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin:14px 0 18px; }
+.benchmark-summary > div { display:flex; flex-direction:column; gap:7px; min-height:65px; padding:11px; border-radius:8px; background:#f0f2e9; }
+.benchmark-summary span { color:#818579; font-size:9px; }
+.benchmark-summary strong { color:#345d4d; font:700 17px var(--app-font-display); letter-spacing:-.03em; }
+.benchmark-table-wrap { margin-top:17px; }
+.benchmark-table-wrap h3 { display:flex; align-items:baseline; gap:9px; margin:0 0 8px; color:#425e51; font-size:11px; }
+.benchmark-table-wrap h3 span { color:#929388; font-size:9px; font-weight:400; }
+.benchmark-table { width:100%; border-collapse:collapse; text-align:left; font-size:10px; }
+.benchmark-table th { padding:8px 9px; border-bottom:1px solid #dcded3; color:#85887e; font:9px var(--app-font-mono); text-transform:uppercase; letter-spacing:.05em; }
+.benchmark-table td { padding:8px 9px; border-bottom:1px solid #ecebe2; color:#52645a; }
+.benchmark-table tr:last-child td { border-bottom:0; }
+.benchmark-caveat { margin:14px 0 0; padding-top:12px; border-top:1px solid #e6e5db; color:#777b71; font-size:10px; line-height:1.55; }
+.benchmark-empty { display:flex; flex-wrap:wrap; gap:9px; }
+.benchmark-empty span { padding:8px 10px; border:1px solid #e2e2d7; border-radius:99px; color:#777b71; background:#f8f7f0; font-size:9px; }
 .disclosure { display:flex; align-items:flex-start; gap:11px; padding:15px 17px; background:#e9eee5; border:1px solid #d4dfd2; border-radius:11px; color:#587064; font-size:11px; line-height:1.55; margin-bottom:40px; }
 .disclosure strong { color:#345e4f; }
 .roadmap { display:grid; grid-template-columns:230px 1fr; gap:30px; border-top:1px solid hsl(var(--border)); padding:28px 0 35px; }
@@ -213,6 +238,7 @@ button:disabled { cursor: not-allowed; }
   .workbench { grid-template-columns:minmax(0,1.3fr) minmax(320px,.9fr); }
   .sample-grid { grid-template-columns:repeat(3,1fr); }
   .sample-image { height:130px; }
+  .benchmark-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media (max-width:760px) {
   .page-wrap { padding:0 16px; }
@@ -232,6 +258,12 @@ button:disabled { cursor: not-allowed; }
   .sample-image { height:120px; }
   .section-header { align-items:start; flex-direction:column; gap:7px; }
   .section-header p { text-align:left; }
+  .benchmark-header { align-items:flex-start; }
+  .benchmark-command { max-width:none; text-align:left; }
+  .benchmark-model-line { flex-direction:column; }
+  .benchmark-table-wrap { overflow-x:auto; }
+  .benchmark-table { min-width:560px; }
+  .benchmark-table-wrap h3 { flex-direction:column; gap:3px; }
   .roadmap { grid-template-columns:1fr; gap:17px; }
   .phases { grid-template-columns:1fr; gap:14px; }
   .phase { padding-bottom:2px; }

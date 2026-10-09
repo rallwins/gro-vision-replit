@@ -7,4 +7,4 @@ Avoid the current OWL-ViT/OWLv2 ONNX exports for browser inference in this proje
 
 **Why:** The Cast failure persisted across backend, dtype, and runtime-version attempts. A real multi-item browser scan verified the alternative path.
 
-**How to apply:** When changing browser vision models, verify full inference in the target browser. For Grounding DINO, keep the caption batch size at one and separate product matching from region detection.
+**How to apply:** When changing browser vision models, verify full inference in the target browser. For Grounding DINO, keep the caption batch size at one and separate product matching from region detection. Native Node ONNX scores do not prove browser compatibility; record the provider and keep browser status explicit in benchmark reports.

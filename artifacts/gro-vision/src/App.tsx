@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, ArrowUpRight, Check, CircleHelp, Crosshair, ImagePlus, LoaderCircle, PackageSearch, RotateCcw, ScanLine, Sparkles, Upload, X } from 'lucide-react';
 import { CATALOG, productById, type ModelProgress, type ProductDetection } from './lib/catalog';
 import { detectGroceryProducts } from './lib/detector';
+import type { BenchmarkReport, BenchmarkRow } from './lib/benchmark';
+import capturedBenchmark from '../benchmark/results/latest.json';
 
 type Sample = { src: string; title: string; kind: string };
 const samples: Sample[] = [
@@ -27,6 +29,7 @@ function App() {
   const [dragging, setDragging] = useState(false);
   const [imageSize, setImageSize] = useState({ width: 1, height: 1 });
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
+  const benchmarkReport = capturedBenchmark as BenchmarkReport;
   const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => () => {
@@ -122,6 +125,19 @@ function App() {
   const imageScale = Math.min(stageSize.width / imageSize.width, stageSize.height / imageSize.height);
   const renderedWidth = imageSize.width * imageScale;
   const renderedHeight = imageSize.height * imageScale;
+  const formatPercent = (value: number | null) => value === null ? 'Unverified' : `${Math.round(value * 100)}%`;
+  const formatSizeAccuracy = (row: BenchmarkRow) => row.sizeAccuracy === null
+    ? 'Unverified'
+    : `${formatPercent(row.sizeAccuracy)} (${row.sizeCorrect}/${row.sizeVerified})`;
+  const formatSkuAccuracy = (row: BenchmarkRow) => row.truth
+    ? `${formatPercent(row.skuAccuracy)} (${row.skuCorrect}/${row.truth})`
+    : 'No scored products';
+  const formatBoxMetrics = (row: BenchmarkRow) => row.truth
+    ? `${formatPercent(row.precision)} / ${formatPercent(row.recall)}`
+    : 'Not scored';
+  const formatSkuRecall = (row: BenchmarkRow) => row.truth
+    ? `${formatPercent(row.recall)} (${row.localized}/${row.truth})`
+    : 'No targets';
 
   return (
     <main className="app-shell">
@@ -310,6 +326,69 @@ function App() {
               </button>
             ))}
           </div>
+        </section>
+
+        <section className="benchmark-section" aria-labelledby="benchmark-title">
+          <div className="section-header benchmark-header">
+            <div>
+              <div className="eyebrow">Repeatable baseline · v1</div>
+              <h2 id="benchmark-title">Measure the current model</h2>
+            </div>
+            <div className="benchmark-command">Re-run with <code>pnpm --filter @workspace/gro-vision run benchmark</code></div>
+          </div>
+          <p className="benchmark-intro">
+            The CLI uses the same pretrained OWL-ViT prompts, threshold, and detector post-processing as the app, with native ONNX Runtime.
+            Detection counts as localized at IoU ≥ 0.50; product identity, catalog-mapped SKU, and verified size are scored separately.
+            The in-browser WebAssembly runtime currently fails to load this model graph (Cast op 13), so this score is not a browser-runtime validation.
+          </p>
+          <div className="benchmark-report" data-testid="benchmark-report">
+              <div className="benchmark-model-line">
+                <span>{benchmarkReport.model}</span>
+                <span>Completed {new Date(benchmarkReport.completedAt).toLocaleString()}</span>
+              </div>
+              <div className="benchmark-summary">
+                <div><span>Detection precision</span><strong>{formatPercent(benchmarkReport.summary.precision)}</strong></div>
+                <div><span>Detection recall</span><strong>{formatPercent(benchmarkReport.summary.recall)}</strong></div>
+                <div><span>Catalog SKU match</span><strong>{formatSkuAccuracy(benchmarkReport.summary)}</strong></div>
+                <div><span>Verified size match</span><strong>{formatSizeAccuracy(benchmarkReport.summary)}</strong></div>
+              </div>
+              <div className="benchmark-table-wrap">
+                <h3>By scene <span>Box detection uses class-agnostic IoU matching.</span></h3>
+                <table className="benchmark-table">
+                  <thead><tr><th>Scene</th><th>Boxes</th><th>Detection P / R</th><th>SKU match</th><th>Verified size</th></tr></thead>
+                  <tbody>{benchmarkReport.scenes.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.label}</td>
+                      <td>{row.truth}</td>
+                      <td>{formatBoxMetrics(row)}</td>
+                      <td>{formatSkuAccuracy(row)}</td>
+                      <td>{formatSizeAccuracy(row)}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+              <div className="benchmark-table-wrap">
+                <h3>By catalog product <span>SKU results use the sample's current catalog mapping.</span></h3>
+                <table className="benchmark-table">
+                  <thead><tr><th>Product</th><th>Ground truth</th><th>SKU recall</th><th>SKU precision</th><th>Verified size</th></tr></thead>
+                  <tbody>{benchmarkReport.products.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.label}</td>
+                      <td>{row.truth}</td>
+                      <td>{formatSkuRecall(row)}</td>
+                      <td>{formatPercent(row.precision)} ({row.localized}/{row.predictions})</td>
+                      <td>{formatSizeAccuracy(row)}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+              <p className="benchmark-caveat">
+                This seed set contains {benchmarkReport.summary.truth} scored objects in {benchmarkReport.scenes.length} supplied demo photos;
+                {` ${benchmarkReport.ignoredItems} `}out-of-catalog objects are ignored, and assumed sizes are excluded from size scoring. Only {benchmarkReport.verifiedSkuItems} of {benchmarkReport.summary.truth} target SKUs
+                and {benchmarkReport.verifiedSizeItems} of {benchmarkReport.summary.truth} numeric sizes are independently verified from visible packaging. The photos are studio
+                examples, not a representative retail test set. Treat the result as a smoke baseline, not a launch-quality accuracy claim.
+              </p>
+            </div>
         </section>
 
         <div className="disclosure" data-testid="text-model-disclosure">
