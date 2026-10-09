@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Gro-Vision"
+description = "Identify multiple packaged grocery products in a photo, with product variants, package sizes, confidence indicators, and annotated image regions."
+version = "1.0.0"
+id = "artifacts/gro-vision"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19725
+
+[services.development]
+run = "pnpm --filter @workspace/gro-vision run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/gro-vision", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/gro-vision/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19725"
+BASE_PATH = "/"

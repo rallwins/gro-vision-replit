@@ -1,44 +1,45 @@
-# [Project name]
+# Gro-Vision
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A browser-based grocery product scanner that detects multiple packages in a photo and suggests product variants such as brand, flavor, package type, and size.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/gro-vision run dev` — run the Gro-Vision web app
+- `pnpm --filter @workspace/gro-vision run typecheck` — typecheck the web app
+- `PORT=5000 BASE_PATH=/ pnpm --filter @workspace/gro-vision run build` — build the web app with artifact runtime settings
+- The first scan loads the pretrained vision model in the browser; allow the initial model download to finish.
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Web: React + Vite
+- Vision: Transformers.js with pretrained OWL-ViT zero-shot object detection
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/gro-vision/` — scanner UI, browser-side detection, product catalog, and sample images
+- `lib/api-spec/` and `artifacts/api-server/` — shared workspace scaffold; Gro-Vision does not use a backend in this MVP
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Run inference in the browser so uploaded photos do not need to be sent to a server.
+- Use open-vocabulary OWL-ViT prompts for MVP package and SKU matching instead of claiming that six example photos are enough to fine-tune a reliable retail detector.
+- Model scores are ranking signals, not calibrated probabilities; size and variant must remain marked uncertain when packaging text is not legible.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Upload or choose a sample photo, identify multiple visible packages, review bounding boxes and candidates, and correct an SKU suggestion.
+- The attached samples demonstrate the workflow; they are not a substitute for a diverse, annotated training and evaluation dataset.
+- Next phases: OCR/barcodes and saved inventory; then a larger labeled real-store dataset, fine-tuning, and measured validation.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- The user requested the project name `gro-vision` and GitHub repository `rallwins/gro-vision-replit`.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- First-time browser model downloads can be large and may take a while on a slow connection.
+- Zero-shot SKU matches are approximate, especially for nearly identical package sizes and variants.
 
 ## Pointers
 
