@@ -5,6 +5,8 @@ description: Replit's GitHub source-control connection and the credential used b
 
 A successful repository read or account-level push permission does not prove the credential used by `git` or `gh` can write. If a private-repository write returns 403, check the integration lifecycle and active credential path; do not try multiple API routes to bypass the denial.
 
-**Why:** A private repository reported push permission for the account, while the workspace's GitHub CLI and REST writes were still denied. The connection status also remained `not_added` after `addIntegration` reported success.
+The GitHub source-control connection can report `addIntegration` success and “already added” while integration search still shows `not_added`; a reauthorization request may then be rejected as not connected. Treat this as unresolved access, not as a reason to try another credential or API route.
 
-**How to apply:** Use the exact integration status and ID, bind a `not_added` connection once, then retry the write once. If it still fails, follow the reauthorization flow only when the connection is `added` and OAuth is reported; otherwise stop and ask the user to update the existing connection's write permissions. Never request or expose tokens.
+**Why:** Private-repository writes can be denied even when account-level access and OAuth scopes look sufficient, and the connection lifecycle can return conflicting states.
+
+**How to apply:** Use the exact integration status and ID, bind a `not_added` connection once, then retry the write once. If it still fails and reauthorization is unavailable because the connection is not recognized as connected, stop and ask the user to update the existing connection's repository write access. Never request or expose tokens.
