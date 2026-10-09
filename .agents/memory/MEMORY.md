@@ -1,0 +1,1 @@
+- [GitHub write access](github-write-access.md) — distinguish Replit's GitHub connection from the credential the Git CLI actually uses.
