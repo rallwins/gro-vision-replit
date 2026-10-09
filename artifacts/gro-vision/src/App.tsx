@@ -286,7 +286,7 @@ function App() {
             </div>
             <div className="result-tools">
               <span className="plain-note">Model scores rank its suggestions; they are not calibrated probabilities.</span>
-              <span className="mono" style={{ fontSize: 8, color: '#8c9084' }}>OWL-ViT</span>
+              <span className="mono" style={{ fontSize: 8, color: '#8c9084' }}>DINO + CLIP</span>
             </div>
           </aside>
         </section>

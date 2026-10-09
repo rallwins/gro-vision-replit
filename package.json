@@ -15,5 +15,10 @@
   "devDependencies": {
     "prettier": "^3.9.6",
     "typescript": "~5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@huggingface/transformers>onnxruntime-web": "1.30.0"
+    }
   }
 }

@@ -1,1 +1,2 @@
 - [GitHub write access](github-write-access.md) — distinguish Replit's GitHub connection from the credential the Git CLI actually uses.
+- [Browser ONNX model compatibility](browser-onnx-models.md) — test model session creation and real inference in-browser; OWL-ViT's Cast(13) graph is incompatible here.
